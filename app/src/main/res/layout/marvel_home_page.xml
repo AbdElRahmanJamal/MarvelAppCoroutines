@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_75_opacity"
+    android:orientation="vertical"
+    tools:context=".marvelhome.presentation.MarvelHomePage">
+
+    <TextView
+        android:id="@+id/error_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:visibility="gone" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/marvel_character_recView"
+        app:layout_constraintVertical_bias="1"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="loading-animation.json"
+        app:lottie_loop="true"
+        app:lottie_speed="1.0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/marvel_character_recView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/marvel_home_ticket" />
+
+</LinearLayout>
