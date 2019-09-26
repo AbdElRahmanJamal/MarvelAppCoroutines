@@ -19,7 +19,7 @@ fun downloadImage(url: String, imageView: ImageView) {
 
     var rc = Picasso.get().load(url)
     //set error image, memory policy
-    rc = rc.error(R.drawable.ic_the_avengers)
+    rc = rc.error(R.drawable.ic_marvel_logo)
     rc.placeholder(R.drawable.ic_the_avengers)
     rc.networkPolicy(NetworkPolicy.OFFLINE)
     rc.memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)

@@ -18,6 +18,7 @@ import com.marvelapp.coroutines.marvelhome.data.entities.Results
 import com.marvelapp.coroutines.marvelhome.data.localdatastore.MarvelCharactersDB
 import com.marvelapp.coroutines.marvelhome.data.localdatastore.MarvelHomeLocalDataStore
 import com.marvelapp.coroutines.marvelhome.data.remotedatastore.MarvelHomeRemoteDataStore
+import com.marvelapp.coroutines.marvelhome.presentation.adapter.EndlessOnScrollListener
 import com.marvelapp.coroutines.marvelhome.presentation.adapter.MarvelCharactersAdapter
 import com.marvelapp.coroutines.marvelhome.presentation.mvi.HomePageIntents
 import com.marvelapp.coroutines.marvelhome.presentation.mvi.HomePageStates
@@ -32,6 +33,7 @@ class MarvelHomePage : Fragment() {
 
     private lateinit var marvelCharactersAdapter: MarvelCharactersAdapter
     private lateinit var marvelHomePageViewModelFactory: MarvelHomePageViewModelFactory
+    private lateinit var viewModel: MarvelHomePageViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -60,11 +62,8 @@ class MarvelHomePage : Fragment() {
                         )
                 )
         )
-
-        with(
-            ViewModelProviders.of(this, marvelHomePageViewModelFactory)
-                        .get(MarvelHomePageViewModel::class.java)
-        ) {
+        viewModel = ViewModelProviders.of(this, marvelHomePageViewModelFactory).get(MarvelHomePageViewModel::class.java)
+        with(viewModel) {
             lifecycleScope.launch {
                 intents.send(HomePageIntents.OnHomePageStartIntent(limit = 15, offset = 0))
                 for (state in homePageState) {
@@ -72,6 +71,9 @@ class MarvelHomePage : Fragment() {
                         is HomePageStates.LoadingState -> lottie_loading.visibility = View.VISIBLE
                         is HomePageStates.SuccessState -> displayDataIntoAdapter(state.value)
                         is HomePageStates.ErrorState -> displayErrorMessage(state.exception)
+                        is HomePageStates.LoadingMoreCharactersLoadingState -> loading_more_layout.visibility = View.VISIBLE
+                        is HomePageStates.LoadingMoreCharactersSuccessState -> displayDataLoadMoreIntoAdapter(state.value)
+                        is HomePageStates.LoadingMoreCharactersErrorState -> displayLoadMoreErrorMessage(state.exception)
                     }
                 }
             }
@@ -79,7 +81,17 @@ class MarvelHomePage : Fragment() {
 
     }
 
+    private fun displayLoadMoreErrorMessage(exception: Throwable) {
+        loading_more_layout.visibility = View.GONE
+    }
+
+    private fun displayDataLoadMoreIntoAdapter(value: List<Results>) {
+        marvelCharactersAdapter.setMarvelCharacters(value)
+        loading_more_layout.visibility = View.GONE
+    }
+
     private fun displayErrorMessage(exception: Throwable) {
+        error_message.visibility = View.VISIBLE
         error_message.text = exception.toString()
         lottie_loading.visibility = View.GONE
     }
@@ -94,6 +106,15 @@ class MarvelHomePage : Fragment() {
         marvel_character_recView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = marvelCharactersAdapter
+            addOnScrollListener(object : EndlessOnScrollListener() {
+                override fun onLoadMore() {
+                    with(viewModel) {
+                        lifecycleScope.launch {
+                            intents.send(HomePageIntents.OnEndlessRecyclerViewIntent(offset = adapter!!.itemCount))
+                        }
+                    }
+                }
+            })
         }
 
     }
