@@ -19,6 +19,7 @@ class MarvelHomePageViewModel(private val getMarvelHomeUseCase: GetMarvelHomeUse
             for (intent in intents) {
                 when (intent) {
                     is HomePageIntents.OnHomePageStartIntent -> getMarvelCharactersList(intent.limit, intent.offset)
+                    is HomePageIntents.OnEndlessRecyclerViewIntent -> getMarvelCharactersList(intent.limit, intent.offset)
                 }
             }
         }
@@ -27,15 +28,23 @@ class MarvelHomePageViewModel(private val getMarvelHomeUseCase: GetMarvelHomeUse
     private fun getMarvelCharactersList(limit: Int = 15, offset: Int = 0) {
         getMarvelHomeUseCase.run {
             getMarvelCharactersList(limit = limit, offset = offset)
-                .observeForever {
-                coroutineScope.launch {
-                    when (it) {
-                        is ScreenState.LoadingState -> homePageState.send(HomePageStates.LoadingState)
-                        is ScreenState.DataStat -> homePageState.send(HomePageStates.SuccessState(it.value))
-                        is ScreenState.ErrorState -> homePageState.send(HomePageStates.ErrorState(it.exception))
+                    .observeForever {
+                        coroutineScope.launch {
+                            when (it) {
+                                is ScreenState.LoadingState -> if (offset == 0)
+                                    homePageState.send(HomePageStates.LoadingState)
+                                else homePageState.send(HomePageStates.LoadingMoreCharactersLoadingState)
+
+                                is ScreenState.DataStat -> if (offset == 0)
+                                    homePageState.send(HomePageStates.SuccessState(it.value))
+                                else homePageState.send(HomePageStates.LoadingMoreCharactersSuccessState(it.value))
+
+                                is ScreenState.ErrorState -> if (offset == 0)
+                                    homePageState.send(HomePageStates.ErrorState(it.exception))
+                                else homePageState.send(HomePageStates.LoadingMoreCharactersErrorState(it.exception))
+                            }
+                        }
                     }
-                }
-            }
         }
     }
 
