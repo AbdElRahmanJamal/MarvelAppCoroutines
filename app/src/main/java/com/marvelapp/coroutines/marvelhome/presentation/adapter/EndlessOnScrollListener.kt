@@ -11,8 +11,10 @@ abstract class EndlessOnScrollListener : RecyclerView.OnScrollListener() {
         if (!recyclerView.canScrollVertically(2)) {
             onLoadMore()
         }
+        onScroll(dx, dy)
     }
 
     abstract fun onLoadMore()
+    abstract fun onScroll(dx: Int, dy: Int)
 
 }

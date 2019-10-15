@@ -20,6 +20,7 @@ class MarvelHomePageViewModel(
     val homePageState: Channel<HomePageStates> = Channel(Channel.CONFLATED)
     val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+
     init {
         coroutineScope.launch {
 
@@ -90,6 +91,12 @@ class MarvelHomePageViewModel(
                 }
         }
     }
+
+    fun saveRecViewDy(dy: Int) {
+        handle.set("DY", dy)
+    }
+
+    fun getRecViewDy() = handle.get<Int>("DY")
 
     override fun onCleared() {
         coroutineScope.cancel()

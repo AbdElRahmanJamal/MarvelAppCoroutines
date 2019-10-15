@@ -42,7 +42,7 @@ class MarvelHomePage : Fragment() {
         super.onActivityCreated(savedInstanceState)
         setMarvelCharactersHomeTittle()
         // setHasOptionsMenu(true)
-        initRecView()
+
 
         val appDatabase = MarvelCharactersDB(this.context!!).marvelCharactersDao()
         val marvelHomeLocalDataStore = MarvelHomeLocalDataStore(appDatabase)
@@ -73,7 +73,7 @@ class MarvelHomePage : Fragment() {
                 }
             }
         }
-
+        initRecView()
     }
 
     private fun displayLoadMoreErrorMessage(exception: Throwable) {
@@ -83,6 +83,7 @@ class MarvelHomePage : Fragment() {
     private fun displayDataLoadMoreIntoAdapter(value: List<Results>) {
         marvelCharactersAdapter.setMarvelCharacters(value)
         loading_more_layout.visibility = View.GONE
+        scrollToSavedPosition()
     }
 
     private fun displayErrorMessage(exception: Throwable) {
@@ -94,6 +95,15 @@ class MarvelHomePage : Fragment() {
     private fun displayDataIntoAdapter(value: List<Results>) {
         marvelCharactersAdapter.setMarvelCharacters(value)
         lottie_loading.visibility = View.GONE
+        scrollToSavedPosition()
+    }
+
+    private fun scrollToSavedPosition() {
+        if (viewModel.getRecViewDy() != null) {
+            if (viewModel.getRecViewDy() != 0)
+                marvel_character_recView.scrollToPosition(viewModel.getRecViewDy()!!)
+          else  marvel_character_recView.scrollToPosition(16)
+        }
     }
 
     private fun initRecView() {
@@ -101,6 +111,7 @@ class MarvelHomePage : Fragment() {
         marvel_character_recView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = marvelCharactersAdapter
+
             addOnScrollListener(object : EndlessOnScrollListener() {
                 override fun onLoadMore() {
                     with(viewModel) {
@@ -109,9 +120,16 @@ class MarvelHomePage : Fragment() {
                         }
                     }
                 }
+
+                override fun onScroll(dx: Int, dy: Int) {
+                    if (viewModel.getRecViewDy() == null) {
+                        viewModel.saveRecViewDy(dy)
+                    } else if (dy > 0) {
+                        viewModel.saveRecViewDy(dy)
+                    }
+                }
             })
         }
-
     }
 
     private fun setMarvelCharactersHomeTittle() {
