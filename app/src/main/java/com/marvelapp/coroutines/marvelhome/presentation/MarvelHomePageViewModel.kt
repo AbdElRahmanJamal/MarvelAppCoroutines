@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.marvelapp.coroutines.frameworks.appnetwork.ScreenState
 import com.marvelapp.coroutines.marvelhome.data.GetMarvelHomeUseCase
+import com.marvelapp.coroutines.marvelhome.data.entities.Results
 import com.marvelapp.coroutines.marvelhome.presentation.mvi.HomePageIntents
 import com.marvelapp.coroutines.marvelhome.presentation.mvi.HomePageStates
 import kotlinx.coroutines.*
@@ -14,6 +15,7 @@ class MarvelHomePageViewModel(
     , private val handle: SavedStateHandle
 ) : ViewModel() {
 
+    private lateinit var value: MutableList<Results>
     val intents: Channel<HomePageIntents> = Channel(Channel.CONFLATED)
     val homePageState: Channel<HomePageStates> = Channel(Channel.CONFLATED)
     val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -34,7 +36,13 @@ class MarvelHomePageViewModel(
                         )
                     }
                 } else {
-                    homePageState.send(handle.get<HomePageStates>("homePageState")!!)
+                    when (intent) {
+                        is HomePageIntents.OnHomePageStartIntent -> homePageState.send(handle.get<HomePageStates>("homePageState")!!)
+                        is HomePageIntents.OnEndlessRecyclerViewIntent -> getMarvelCharactersList(
+                            intent.limit,
+                            intent.offset
+                        )
+                    }
                 }
             }
         }
@@ -54,12 +62,14 @@ class MarvelHomePageViewModel(
                             }
 
                             is ScreenState.DataStat -> if (offset == 0) {
-                                homePageState.send(HomePageStates.SuccessState(it.value))
+                                value = it.value.toMutableList()
+                                homePageState.send(HomePageStates.SuccessState(value))
                                 handle.set("homePageState", HomePageStates.SuccessState(it.value))
 
                             } else {
-                                homePageState.send(HomePageStates.LoadingMoreCharactersSuccessState(it.value))
-                                handle.set("homePageState", HomePageStates.LoadingMoreCharactersSuccessState(it.value))
+                                value.addAll(it.value)
+                                homePageState.send(HomePageStates.LoadingMoreCharactersSuccessState(value))
+                                handle.set("homePageState", HomePageStates.LoadingMoreCharactersSuccessState(value))
 
                             }
 

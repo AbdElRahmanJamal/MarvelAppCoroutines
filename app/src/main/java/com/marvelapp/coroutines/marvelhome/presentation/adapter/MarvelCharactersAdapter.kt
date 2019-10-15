@@ -35,6 +35,7 @@ class MarvelCharactersAdapter : RecyclerView.Adapter<MarvelCharactersAdapter.Mar
     }
 
     internal fun setMarvelCharacters(marvelCharacters: List<Results>) {
+        this.marvelCharacters.clear()
         this.marvelCharacters.addAll(marvelCharacters)
         notifyDataSetChanged()
     }
