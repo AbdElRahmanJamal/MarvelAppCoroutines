@@ -1,8 +1,10 @@
-package com.marvelapp.coroutines.frameworks.appnetwork.interceptor
+package com.marvelapp.coroutines.frameworks.appnetwork
 
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.marvelapp.coroutines.BuildConfig.BASE_URL
+import com.marvelapp.coroutines.frameworks.appnetwork.interceptor.ConnectivityInterceptor
+import com.marvelapp.coroutines.frameworks.appnetwork.interceptor.MarvelApiKeysInterceptor
 import com.marvelapp.coroutines.marvelhome.data.remotedatastore.MarvelHomePageApi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient

@@ -28,6 +28,7 @@ class MarvelCharactersAdapter : RecyclerView.Adapter<MarvelCharactersAdapter.Mar
         val marvelCharacter = marvelCharacters[position]
         marvelCharacter.thumbnail?.let {
             val imageURL = marvelCharacter.thumbnail.path + "." + marvelCharacter.thumbnail.extension
+            imageURL.replace("http", "https")
             downloadImage(imageURL, holder.charactersImage)
             holder.charactersName.text = marvelCharacter.name ?: marvelCharacter.title
         }

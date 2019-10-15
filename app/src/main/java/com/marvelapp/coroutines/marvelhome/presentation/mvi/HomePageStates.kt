@@ -1,13 +1,26 @@
 package com.marvelapp.coroutines.marvelhome.presentation.mvi
 
+import android.os.Parcelable
 import com.marvelapp.coroutines.marvelhome.data.entities.Results
+import kotlinx.android.parcel.Parcelize
 
 sealed class HomePageStates {
 
-    class SuccessState(val value: List<Results>) : HomePageStates()
-    class ErrorState(val exception: Throwable) : HomePageStates()
-    object LoadingState : HomePageStates()
-    object LoadingMoreCharactersLoadingState : HomePageStates()
-    data class LoadingMoreCharactersErrorState(val exception: Throwable) : HomePageStates()
-    class LoadingMoreCharactersSuccessState(val value: List<Results>) : HomePageStates()
+    @Parcelize
+    class SuccessState(val value: List<Results>) : HomePageStates(), Parcelable
+
+    @Parcelize
+    class ErrorState(val exception: Throwable) : HomePageStates(), Parcelable
+
+    @Parcelize
+    object LoadingState : HomePageStates(), Parcelable
+
+    @Parcelize
+    object LoadingMoreCharactersLoadingState : HomePageStates(), Parcelable
+
+    @Parcelize
+    data class LoadingMoreCharactersErrorState(val exception: Throwable) : HomePageStates(), Parcelable
+
+    @Parcelize
+    class LoadingMoreCharactersSuccessState(val value: List<Results>) : HomePageStates(), Parcelable
 }
