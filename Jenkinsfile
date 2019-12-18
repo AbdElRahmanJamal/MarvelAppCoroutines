@@ -28,7 +28,7 @@ pipeline {
 
 
 }
-
+}
 def sendmail(){
 emailext attachLog: true, body: '''Dears,
 HIIIII status for HIII - Build # 100:
@@ -37,5 +37,4 @@ If you don't have access to Jenkins, Please find the Logs attached in the mail.
 
 Best Regards,
 TSS-DeploymentCoE''', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'abdelrahmangamal31@gmail.com'
-}
 }
