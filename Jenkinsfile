@@ -156,12 +156,3 @@ message: "Build $STATUS - JOB: ${env.JOB_NAME}, BUILD #: ${env.BUILD_NUMBER}, (<
 tokenCredentialId: 'jenkins-slack-integration'
 }
 
-def sendmail(){
-emailext attachLog: true, body: '''Dears,
-$BUILD_STATUS status for $PROJECT_NAME - Build # $BUILD_NUMBER:
-Check console output at $BUILD_URL to view the results.
-If you don't have access to Jenkins, Please find the Logs attached in the mail.
-
-Best Regards,
-TSS-DeploymentCoE''', subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', to: 'hazem.hamid@vodafone.com,mohamed.alaaeldin-kamel@vodafone.com,mohamed.lotfy@vodafone.com,zsolt.balo1@vodafone.com,horvath.lorand@vodafone.com,janos.keseru1@vodafone.com'
-}
